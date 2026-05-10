@@ -1,4 +1,4 @@
-import { Footer } from "../components/Footer";
+import { Footer } from "../components/Footer/Footer";
 import { Head } from "../components/Head";
 
 export function Layout({children}){
@@ -10,6 +10,4 @@ export function Layout({children}){
         <Footer />
     </>
     );
-
-
 }

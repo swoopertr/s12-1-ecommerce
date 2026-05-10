@@ -11,14 +11,28 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import Popover from '@mui/material/Popover';
+import ListItemButton from '@mui/material/ListItemButton';
 import AdbIcon from '@mui/icons-material/Adb';
+import DarkMode from './DarkMode';
+import { categories } from '../Constants/Categories';
 
-const pages = ['cat1', 'cat2', 'cat3'];
+// Her kategori için alt kategoriler
+const categorySubitems = {
+  giyim: ['Erkek', 'Kadın', 'Çocuk', 'Ayakkabı', 'Aksesuar'],
+  kozmetik: ['Cilt Bakımı', 'Makyaj', 'Saç Bakımı', 'Vücut Bakımı'],
+  elektronik: ['Telefon', 'Bilgisayar', 'Tablet', 'Aksesuar'],
+  spor: ['Fitness', 'Outdoor', 'Su Sporları', 'Spor Giyim']
+};
+
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 export function Head() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [hoveredCategory, setHoveredCategory] = React.useState(null);
+  const [categoryAnchorEl, setCategoryAnchorEl] = React.useState(null);
+  const timeoutRef = React.useRef(null);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -33,6 +47,23 @@ export function Head() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleCategoryHover = (event, category) => {
+    // Önceki timeout'u iptal et
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setHoveredCategory(category);
+    setCategoryAnchorEl(event.currentTarget);
+  };
+
+  const handleCategoryLeave = () => {
+    // 200ms sonra popover'ı kapat
+    timeoutRef.current = setTimeout(() => {
+      setHoveredCategory(null);
+      setCategoryAnchorEl(null);
+    }, 200);
   };
 
   return (
@@ -54,9 +85,7 @@ export function Head() {
               color: 'inherit',
               textDecoration: 'none',
             }}
-          >
-            LOGO
-          </Typography>
+          >          </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -85,7 +114,7 @@ export function Head() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
+              {categories.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
                 </MenuItem>
@@ -112,16 +141,78 @@ export function Head() {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
+            {categories.map((page) => (
+              <Box
                 key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                onMouseEnter={(e) => handleCategoryHover(e, page)}
+                onMouseLeave={handleCategoryLeave}
+                sx={{ position: 'relative' }}
               >
-                {page}
-              </Button>
+                <Button
+                  onClick={handleCloseNavMenu}
+                  sx={{ 
+                    my: 2, 
+                    color: 'white', 
+                    display: 'block',
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {page}
+                </Button>
+              </Box>
             ))}
           </Box>
+          <Popover
+            open={Boolean(categoryAnchorEl) && hoveredCategory}
+            anchorEl={categoryAnchorEl}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            disableRestoreFocus
+            disableEnforceFocus
+            disableAutoFocus
+            slotProps={{
+              backdrop: {
+                sx: { pointerEvents: 'none' }
+              },
+              paper: {
+                onMouseEnter: () => {
+                  // Popover açıkken timeout'u iptal et
+                  if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                  }
+                },
+                onMouseLeave: handleCategoryLeave,
+                sx: {
+                  mt: 1,
+                  pointerEvents: 'auto'
+                }
+              }
+            }}
+          >
+            <Box sx={{ py: 1, minWidth: '200px' }}>
+              {hoveredCategory && categorySubitems[hoveredCategory]?.map((subitem) => (
+                <ListItemButton
+                  key={subitem}
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    fontSize: '0.9rem',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                    }
+                  }}
+                >
+                  {subitem}
+                </ListItemButton>
+              ))}
+            </Box>
+          </Popover>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -151,6 +242,7 @@ export function Head() {
               ))}
             </Menu>
           </Box>
+          <DarkMode />
         </Toolbar>
       </Container>
     </AppBar>

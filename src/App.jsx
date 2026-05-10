@@ -5,14 +5,19 @@ import heroImg from './assets/hero.png'
 import './App.css'
 import { Home } from './pages/Home'
 import { Layout } from './layouts/layout'
+import { Categories } from './pages/Categories'
+import DarkMode from './components/DarkMode'
 
 function App() {
  
   return (
-    <Layout>
-      <Home />
-    </Layout>
     
+    <Layout>
+      
+      <Home />
+      <Categories />
+    </Layout>
+
   )
 }
 

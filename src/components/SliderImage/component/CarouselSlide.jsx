@@ -20,7 +20,7 @@ const CarouselSlide = ({ content }) => {
 
   return (
     <Card className={classes.card}>
-      <Typography>{title}</Typography>
+  
       <CardMedia className={classes.img} component="img" src={imgSrc} />
     </Card>
   );
