@@ -15,7 +15,8 @@ import Popover from '@mui/material/Popover';
 import ListItemButton from '@mui/material/ListItemButton';
 import AdbIcon from '@mui/icons-material/Adb';
 import DarkMode from './DarkMode';
-import { categories } from '../Constants/Categories';
+import { categoriesAll } from '../Constants/Categories';
+import { UserContext } from '../context/UserContextWrapper';
 
 // Her kategori için alt kategoriler
 const categorySubitems = {
@@ -28,6 +29,9 @@ const categorySubitems = {
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 export function Head() {
+
+ const {user, setUser } = React.useContext(UserContext);
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [hoveredCategory, setHoveredCategory] = React.useState(null);
@@ -114,7 +118,7 @@ export function Head() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {categories.map((page) => (
+              {categoriesAll.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
                 </MenuItem>
@@ -141,7 +145,7 @@ export function Head() {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {categories.map((page) => (
+            {categoriesAll.map((page) => (
               <Box
                 key={page}
                 onMouseEnter={(e) => handleCategoryHover(e, page)}
@@ -216,7 +220,7 @@ export function Head() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                {user}
               </IconButton>
             </Tooltip>
             <Menu
